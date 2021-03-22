@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fine-grained Source Style Transfer for Non-Parallel Voice Conversion</title>
+</head>
+<body>
+
+<h2 align="center">Fine-grained Source Style Transfer for Non-Parallel Voice Conversion</h2>
+<!-- <div><b>Authors:</b> Zhichao Wang</div> -->
+<div><b>Abstract:</b> Current voice conversion (VC) can synthesize speech that is indistinguishable from the target speaker's speech. However, the current voice conversion methods focus more on the modification of timbre style, and there are limitations to the modeling of source audio's prosodic style resulting in difficulties in the application of some scenes, such as dubbing. This study proposes a fine-grained source style transfer framework based on bottleneck feature. We manage to solve these limitations by hybrid modeling, including three methods. First, we trained our model conditioned on prosodic features to improve the model's stability and the abilities to represent and control prosody. Second, we use the SA-WA encoder to excavate the sentential context and prosodic information. Third, to extract a comprehensive speaker-independent prosody representation, we design a prosody module that uses an adversarial training strategy with mel spectrum and bottleneck feature as input. Experiments show that our approach is superior to the baseline. The proposed system is quite effective in improving source style transfer performance that our system has better abilities in modeling prosody representations and controlling synthesized prosody, and audio quality and speaker similarity are well maintained.
+</div>
+
+
+<h4>1. Examples target speaker speech: </h4>
+<blockquote>
+<table border=1>
+<tr>
+    <td align="center"><span>speaker</span></td>
+    <td align="center" colspan="3"><span>samples</span></td>
+</tr>
+<tr>
+    <td>db1(only Mandarin)</td>
+    <td><audio controls><source src="samples/origin/db1/000527.wav"></audio></td>
+    <td><audio controls><source src="samples/origin/db1/003863.wav"></audio></td>
+    <td><audio controls><source src="samples/origin/db1/007261.wav"></audio></td>
+</tr>
+
+</table>
+<br/>
+</blockquote>
+
+<h4>2. The results of source style transfer: </h4>
+<blockquote>
+<table border=1>
+<tr>
+    <td rowspan="2" align="center"><span>Test Set</span></td>
+    <td rowspan="2" align="center"><span>Source Audio</span></td>
+    <td colspan="4" align="center"><span>Synthesized Speech</span></td>
+</tr>
+<tr>
+    <td align="center"><span>BL<span></td>
+    <td align="center"><span>P1<span></td>
+    <td align="center"><span>P3(proposed)<span></td>
+</tr>
+<tr>
+    <td rowspan="3">1</td>
+    <td rowspan="3"><audio controls><source src="samples/testset/001001.wav"></audio></td>
+    <td><audio controls><source src="samples/BL/db-4_pt_001001_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/db-4_pt_001001_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/db-4_pt_001001_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/db-4_pt_001001_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <!-- <td>1</td> -->
+    <!-- <td><audio controls><source src="samples/testset/001001.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL/child_pt_001001_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/child_pt_001001_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/child_pt_001001_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/child_pt_001001_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <!-- <td>1</td> -->
+    <!-- <td><audio controls><source src="samples/testset/001001.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL/TJ001_pt_001001_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/TJ001_pt_001001_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/TJ001_pt_001001_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/TJ001_pt_001001_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <td rowspan="3">2</td>
+    <td rowspan="3"><audio controls><source src="samples/testset/001003.wav"></audio></td>
+    <td><audio controls><source src="samples/BL/db-4_pt_001003_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/db-4_pt_001003_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/db-4_pt_001003_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/db-4_pt_001003_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <!-- <td>2</td> -->
+    <!-- <td><audio controls><source src="samples/testset/001003.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL/child_pt_001003_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/child_pt_001003_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/child_pt_001003_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/child_pt_001003_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <!-- <td>2</td> -->
+    <!-- <td><audio controls><source src="samples/testset/001003.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL/TJ001_pt_001003_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/TJ001_pt_001003_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/TJ001_pt_001003_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/TJ001_pt_001003_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <td rowspan="3">3</td>
+    <td rowspan="3"><audio controls><source src="samples/testset/001006.wav"></audio></td>
+    <td><audio controls><source src="samples/BL/db-4_pt_001006_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/db-4_pt_001006_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/db-4_pt_001006_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/db-4_pt_001006_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <!-- <td>3</td> -->
+    <!-- <td><audio controls><source src="samples/testset/001006.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL/child_pt_001006_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/child_pt_001006_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/child_pt_001006_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/child_pt_001006_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <!-- <td>3</td> -->
+    <!-- <td><audio controls><source src="samples/testset/001006.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL/TJ001_pt_001006_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/TJ001_pt_001006_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/TJ001_pt_001006_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/TJ001_pt_001006_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <td rowspan="3">4</td>
+    <td rowspan="3"><audio controls><source src="samples/testset/001007.wav"></audio></td>
+    <td><audio controls><source src="samples/BL/db-4_pt_001007_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/db-4_pt_001007_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/db-4_pt_001007_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/db-4_pt_001007_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <!-- <td>4</td> -->
+    <!-- <td><audio controls><source src="samples/testset/001007.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL/child_pt_001007_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/child_pt_001007_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/child_pt_001007_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/child_pt_001007_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <!-- <td>4</td> -->
+    <!-- <td><audio controls><source src="samples/testset/001007.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL/TJ001_pt_001007_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/TJ001_pt_001007_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/TJ001_pt_001007_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/TJ001_pt_001007_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <td rowspan="3">5</td>
+    <td rowspan="3"><audio controls><source src="samples/testset/001008.wav"></audio></td>
+    <td><audio controls><source src="samples/BL/db-4_pt_001008_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/db-4_pt_001008_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/db-4_pt_001008_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/db-4_pt_001008_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <!-- <td>5</td> -->
+    <!-- <td><audio controls><source src="samples/testset/001008.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL/child_pt_001008_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/child_pt_001008_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/child_pt_001008_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/child_pt_001008_999-pre.wav"></audio></td>
+</tr>
+<tr>
+    <!-- <td>5</td> -->
+    <!-- <td><audio controls><source src="samples/testset/001008.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL/TJ001_pt_001008_999-pre.wav"></audio></td>
+    <td><audio controls><source src="samples/BL+T/TJ001_pt_001008_999-pre.wav"></audio></td>
+    <!-- <td><audio controls><source src="samples/BL+TS/TJ001_pt_001008_999-pre.wav"></audio></td> -->
+    <td><audio controls><source src="samples/BL+TSA/TJ001_pt_001008_999-pre.wav"></audio></td>
+</tr>
+</table>
+<br/>
+</blockquote>
+
+
+
+
+
+<h4>2. The results of Mandarin &#8594; Tianjin: </h4>
+<blockquote>
+<table border=1>
+    <tr>
+        <td rowspan="2" align="center"><span>Test Set</span></td>
+        <td rowspan="2" align="center"><span>Source Audio</span></td>
+        <td rowspan="2" align="center"><span>Target Speaker</span></td>
+        <td colspan="4" align="center"><span>Synthesized Speech</span></td>
+    
+    </tr>
+    <tr>
+        <td align="center"><span>BL<span></td>
+        <td align="center"><span>P1<span></td>
+        <td align="center"><span>P2(proposed)<span></td>
+        <!-- <td align="center"><span>P3(proposed)<span></td> -->
+    </tr>
+    <tr>
+        <td rowspan="3">1</td>
+        <td rowspan="3"><audio controls><source src="samples/testset/001001.wav"></audio></td>
+        <td>s1</td>
+        <td><audio controls><source src="samples/BL/db-4_tj_001001_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/db-4_tj_001001_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/db-4_tj_001001_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/db-4_tj_001001_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <!-- <td>1</td> -->
+        <td>s2</td>
+        <!-- <td><audio controls><source src="samples/testset/001001.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL/child_tj_001001_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/child_tj_001001_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/child_tj_001001_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/child_tj_001001_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <!-- <td>1</td> -->
+        <td>s3</td>
+        <!-- <td><audio controls><source src="samples/testset/001001.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL/TJ001_tj_001001_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/TJ001_tj_001001_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/TJ001_tj_001001_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/TJ001_tj_001001_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <td rowspan="3">2</td>
+        <td rowspan="3"><audio controls><source src="samples/testset/001003.wav"></audio></td>
+        <td>s1</td>
+        <td><audio controls><source src="samples/BL/db-4_tj_001003_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/db-4_tj_001003_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/db-4_tj_001003_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/db-4_tj_001003_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <!-- <td>2</td> -->
+        <td>s2</td>
+        <!-- <td><audio controls><source src="samples/testset/001003.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL/child_tj_001003_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/child_tj_001003_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/child_tj_001003_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/child_tj_001003_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <!-- <td>2</td> -->
+        <td>s3</td>
+        <!-- <td><audio controls><source src="samples/testset/001003.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL/TJ001_tj_001003_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/TJ001_tj_001003_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/TJ001_tj_001003_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/TJ001_tj_001003_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <td rowspan="3">3</td>
+        <td rowspan="3"><audio controls><source src="samples/testset/001006.wav"></audio></td>
+        <td>s1</td>
+        <td><audio controls><source src="samples/BL/db-4_tj_001006_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/db-4_tj_001006_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/db-4_tj_001006_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/db-4_tj_001006_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <!-- <td>3</td> -->
+        <td>s2</td>
+        <!-- <td><audio controls><source src="samples/testset/001006.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL/child_tj_001006_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/child_tj_001006_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/child_tj_001006_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/child_tj_001006_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <!-- <td>3</td> -->
+        <td>s3</td>
+        <!-- <td><audio controls><source src="samples/testset/001006.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL/TJ001_tj_001006_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/TJ001_tj_001006_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/TJ001_tj_001006_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/TJ001_tj_001006_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <td rowspan="3">4</td>
+        <td rowspan="3"><audio controls><source src="samples/testset/001007.wav"></audio></td>
+        <td>s1</td>
+        <td><audio controls><source src="samples/BL/db-4_tj_001007_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/db-4_tj_001007_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/db-4_tj_001007_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/db-4_tj_001007_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <!-- <td>4</td> -->
+        <td>s2</td>
+        <!-- <td><audio controls><source src="samples/testset/001007.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL/child_tj_001007_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/child_tj_001007_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/child_tj_001007_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/child_tj_001007_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <!-- <td>4</td> -->
+        <td>s3</td>
+        <!-- <td><audio controls><source src="samples/testset/001007.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL/TJ001_tj_001007_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/TJ001_tj_001007_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/TJ001_tj_001007_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/TJ001_tj_001007_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <td rowspan="3">5</td>
+        <td rowspan="3"><audio controls><source src="samples/testset/001008.wav"></audio></td>
+        <td>s1</td>
+        <td><audio controls><source src="samples/BL/db-4_tj_001008_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/db-4_tj_001008_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/db-4_tj_001008_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/db-4_tj_001008_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <!-- <td>5</td> -->
+        <td>s2</td>
+        <!-- <td><audio controls><source src="samples/testset/001008.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL/child_tj_001008_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/child_tj_001008_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/child_tj_001008_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/child_tj_001008_999-pre.wav"></audio></td>
+    </tr>
+    <tr>
+        <!-- <td>5</td> -->
+        <td>s3</td>
+        <!-- <td><audio controls><source src="samples/testset/001008.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL/TJ001_tj_001008_999-pre.wav"></audio></td>
+        <td><audio controls><source src="samples/BL+T/TJ001_tj_001008_999-pre.wav"></audio></td>
+        <!-- <td><audio controls><source src="samples/BL+TS/TJ001_tj_001008_999-pre.wav"></audio></td> -->
+        <td><audio controls><source src="samples/BL+TSA/TJ001_tj_001008_999-pre.wav"></audio></td>
+    </tr>
+</table>
+<br/>
+</blockquote>
