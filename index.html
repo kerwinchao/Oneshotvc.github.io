@@ -2,404 +2,344 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Enriching Source Style Transfer in Recognition-Synthesis based Non-Parallel Voice Conversion</title>
+<title>ICASSP 2022 oneshot</title>
 </head>
 <body>
 
-<h2 align="center">Enriching Source Style Transfer in Recognition-Synthesis based Non-Parallel Voice Conversion</h2>
+<h2 align="center">ICASSP 2022 oneshot</h2>
 <!-- <div><b>Authors:</b> Zhichao Wang</div> -->
-<div><b>Abstract:</b>  Current voice conversion (VC) methods can successfully convert the audio's timbre, but there are still limitations to the modeling of source audio's prosodic style resulting in difficulties in the application of some scenes. This study proposes a source style transfer framework based on recognition-synthesis framework using bottleneck feature and mel spectrum as input. We manage to solve these limitations by explicit and implicit hybrid modeling, including three methods. First,  we trained our model conditioned on prosodic features to improve the model's stability and the abilities to represent and control prosody, as the explicit modeling prosody module. Second, to solve the problem of timbre leakage in prosody and extract a comprehensive prosody representation, we design an implicit modeling prosody module using an adversarial training strategy with mel spectrum and bottleneck feature as input. Third, we use the modified self-attention based encoder to excavate the sentential context and prosodic information. Experiments show that our approach is superior to the baseline. The proposed system is quite effective in improving source style transfer performance that our system has better abilities in modeling prosody representations and controlling synthesized prosody, and audio quality and speaker similarity are well maintained.
+<div><b>Abstract:</b>  This paper proposes an expressive one-shot speaker adaptation framework that performs expressive conversion across arbitrary speakers with only one target-speaker utterance. With training on one utterance, the conversion model is easy to over-fit to training data and causes low speaker similarity and conversion expressiveness.  In this paper, we manage to solve this problem by three proposed methods. First, speaker normalization module is introduced to normalize speaker-related information such as timber and style in bottleneck features extracted by ASR. Furthermore, we adopt weight regularization in the adaptation process to encourage adapted model similar to base model to preserve knowledge and prevent over-fitting in training data. Finally, to comprehensively decouple the speech factors(content, speaker, style) and achieve expressive voice conversion, prosody module is designed in our framework to extract prosody representation. Experiments show that our approach is superior to state-of-the-art one-shot VC systems in terms of style and speaker similarity; meanwhile, the speech naturalness also achieves good results.
 </div>
 
 <hr>
 <h4>System Description</h2>
-<p><strong>CS: comparison system which may cause speaker leakage and unstability</strong> </p>
-<p><strong>BL: baseline system using lf0,vuv and energy</strong> </p>
-<p><strong>P1: adopt VAE with auxiliary speaker classifier based on BL system</strong> </p>
-<p><strong>P2: use SA-WA encoder instead of CBHG encoder based on P1.</strong> </p>
-<p><strong>P3(proposed): the final system we proposed with SA-WA encoder and prosody module</strong> </p>
+<p><strong>AGAINVC</strong> </p>
+<p><strong>VQMIVC</strong> </p>
+<p><strong>GSE</strong> </p>
+<p><strong>GSE-finetune</strong> </p>
+<p><strong>BL: baseline system</strong> </p>
+<p><strong>P1: adopt speaker normalization based on BL system</strong> </p>
+<p><strong>P2: use weight regularization based on P1.</strong> </p>
+<p><strong>P3(proposed): the final system we proposed. P3 uses prosody module based on P2</strong> </p>
 
 <hr>
 
-<h4>1. Examples target speaker speech: </h4>
-<blockquote>
-<table border=1>
-<tr>
-    <td align="center"><span>speaker</span></td>
-    <td align="center" colspan="3"><span>samples</span></td>
-</tr>
-<tr>
-    <td>db1</td>
-    <td><audio controls><source src="samples/origin/db1/000527.wav"></audio></td>
-    <td><audio controls><source src="samples/origin/db1/003863.wav"></audio></td>
-    <td><audio controls><source src="samples/origin/db1/007261.wav"></audio></td>
-</tr>
-
-</table>
-<br/>
-</blockquote>
-
-<h4>2. The results of source style transfer in TTS testset: </h4>
+<h4>1. The results of comparing with SOTA one-shot vc methods: </h4>
 <blockquote>
 <table border=1>
     <tr>
-        <td rowspan="2" align="center"><span>Test Set</span></td>
-        <td rowspan="2" align="center"><span>Testing scenarios</span></td>
+        <td rowspan="2" align="center"><span>Target Speaker</span></td>
         <td rowspan="2" align="center"><span>Source Audio</span></td>
+        <td rowspan="2" align="center"><span>Target Speaker Audio</span></td>
         <td colspan="5" align="center"><span>Synthesized Speech</span></td>
     </tr>
 
     <tr>
-        <td align="center"><span>CS<span></td>
+        <td align="center"><span>AGAINVC<span></td>
+        <td align="center"><span>VQMIVC<span></td>
+        <td align="center"><span>GSE<span></td>
+        <td align="center"><span>GSE-finetune<span></td>
+        <td align="center"><span>P3(proposed)<span></td>
+        <!-- <td align="center"><span>P3(proposed)<span></td> -->
+    </tr>
+
+    <tr>
+        <td>slt</td>
+        <td><audio controls><source src="samples/source/slt_rms_arctic_a0007.wav"></td>
+        <td><audio controls><source src="samples/spk/slt_rms_arctic_a0007.wav"></td>
+        <td><audio controls><source src="samples/againvc/slt_rms_arctic_a0007.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/slt_rms_arctic_a0007.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/slt_rms_arctic_a0007.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/slt_rms_arctic_a0007.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/slt_rms_arctic_a0007.wav"></audio></td>
+    </tr>
+    <tr>
+        <td>slt</td>
+        <td><audio controls><source src="samples/source/slt_rms_arctic_a0003.wav"></td>
+        <td><audio controls><source src="samples/spk/slt_rms_arctic_a0003.wav"></td>
+        <td><audio controls><source src="samples/againvc/slt_rms_arctic_a0003.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/slt_rms_arctic_a0003.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/slt_rms_arctic_a0003.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/slt_rms_arctic_a0003.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/slt_rms_arctic_a0003.wav"></audio></td>
+    </tr>
+    
+    <tr>
+        <td>slt</td>
+        <td><audio controls><source src="samples/source/slt_clb_arctic_a0026.wav"></td>
+        <td><audio controls><source src="samples/spk/slt_clb_arctic_a0026.wav"></td>
+        <td><audio controls><source src="samples/againvc/slt_clb_arctic_a0026.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/slt_clb_arctic_a0026.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/slt_clb_arctic_a0026.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/slt_clb_arctic_a0026.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/slt_clb_arctic_a0026.wav"></audio></td>
+    </tr>
+    
+
+
+    <tr>
+        <td>slt</td>
+        <td><audio controls><source src="samples/source/slt_clb_arctic_a0025.wav"></td>
+        <td><audio controls><source src="samples/spk/slt_clb_arctic_a0025.wav"></td>
+        <td><audio controls><source src="samples/againvc/slt_clb_arctic_a0025.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/slt_clb_arctic_a0025.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/slt_clb_arctic_a0025.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/slt_clb_arctic_a0025.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/slt_clb_arctic_a0025.wav"></audio></td>
+    </tr>
+
+
+
+    <tr>
+        <td>slt</td>
+        <td><audio controls><source src="samples/source/slt_0011_000356.wav"></td>
+        <td><audio controls><source src="samples/spk/slt_0011_000356.wav"></td>
+        <td><audio controls><source src="samples/againvc/slt_0011_000356.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/slt_0011_000356.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/slt_0011_000356.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/slt_0011_000356.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/slt_0011_000356.wav"></audio></td>
+    </tr>
+
+
+
+
+    <tr>
+        <td>slt</td>
+        <td><audio controls><source src="samples/source/slt_0011_001053.wav"></td>
+        <td><audio controls><source src="samples/spk/slt_0011_001053.wav"></td>
+        <td><audio controls><source src="samples/againvc/slt_0011_001053.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/slt_0011_001053.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/slt_0011_001053.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/slt_0011_001053.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/slt_0011_001053.wav"></audio></td>
+    </tr>
+
+
+
+
+
+    <tr>
+        <td>bdl</td>
+        <td><audio controls><source src="samples/source/bdl_rms_arctic_a0006.wav"></td>
+        <td><audio controls><source src="samples/spk/bdl_rms_arctic_a0006.wav"></td>
+        <td><audio controls><source src="samples/againvc/bdl_rms_arctic_a0006.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/bdl_rms_arctic_a0006.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/bdl_rms_arctic_a0006.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/bdl_rms_arctic_a0006.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/bdl_rms_arctic_a0006.wav"></audio></td>
+    </tr>
+
+
+    <tr>
+        <td>bdl</td>
+        <td><audio controls><source src="samples/source/bdl_rms_arctic_a0002.wav"></td>
+        <td><audio controls><source src="samples/spk/bdl_rms_arctic_a0002.wav"></td>
+        <td><audio controls><source src="samples/againvc/bdl_rms_arctic_a0002.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/bdl_rms_arctic_a0002.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/bdl_rms_arctic_a0002.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/bdl_rms_arctic_a0002.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/bdl_rms_arctic_a0002.wav"></audio></td>
+    </tr>
+
+
+    <tr>
+        <td>bdl</td>
+        <td><audio controls><source src="samples/source/bdl_clb_arctic_a0013.wav"></td>
+        <td><audio controls><source src="samples/spk/bdl_clb_arctic_a0013.wav"></td>
+        <td><audio controls><source src="samples/againvc/bdl_clb_arctic_a0013.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/bdl_clb_arctic_a0013.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/bdl_clb_arctic_a0013.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/bdl_clb_arctic_a0013.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/bdl_clb_arctic_a0013.wav"></audio></td>
+    </tr>
+
+
+
+    <tr>
+        <td>bdl</td>
+        <td><audio controls><source src="samples/source/bdl_clb_arctic_a0004.wav"></td>
+        <td><audio controls><source src="samples/spk/bdl_clb_arctic_a0004.wav"></td>
+        <td><audio controls><source src="samples/againvc/bdl_clb_arctic_a0004.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/bdl_clb_arctic_a0004.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/bdl_clb_arctic_a0004.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/bdl_clb_arctic_a0004.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/bdl_clb_arctic_a0004.wav"></audio></td>
+    </tr>
+
+
+
+    <tr>
+        <td>bdl</td>
+        <td><audio controls><source src="samples/source/bdl_0011_000701.wav"></td>
+        <td><audio controls><source src="samples/spk/bdl_0011_000701.wav"></td>
+        <td><audio controls><source src="samples/againvc/bdl_0011_000701.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/bdl_0011_000701.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/bdl_0011_000701.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/bdl_0011_000701.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/bdl_clb_arctic_a0004.wav"></audio></td>
+    </tr>
+
+
+    <tr>
+        <td>bdl</td>
+        <td><audio controls><source src="samples/source/bdl_0011_000701.wav"></td>
+        <td><audio controls><source src="samples/spk/bdl_0011_000701.wav"></td>
+        <td><audio controls><source src="samples/againvc/bdl_0011_000701.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/bdl_0011_000701.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/bdl_0011_000701.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/bdl_0011_000701.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/bdl_clb_arctic_a0004.wav"></audio></td>
+    </tr>
+
+
+    <tr>
+        <td>p340</td>
+        <td><audio controls><source src="samples/source/p340_rms_arctic_a0006.wav"></td>
+        <td><audio controls><source src="samples/spk/p340_rms_arctic_a0006.wav"></td>
+        <td><audio controls><source src="samples/againvc/p340_rms_arctic_a0006.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/p340_rms_arctic_a0006.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/p340_rms_arctic_a0006.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/p340_rms_arctic_a0006.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/p340_rms_arctic_a0006.wav"></audio></td>
+    </tr>
+
+    <tr>
+        <td>p340</td>
+        <td><audio controls><source src="samples/source/p340_clb_arctic_a0017.wav"></td>
+        <td><audio controls><source src="samples/spk/p340_clb_arctic_a0017.wav"></td>
+        <td><audio controls><source src="samples/againvc/p340_clb_arctic_a0017.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/p340_clb_arctic_a0017.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/p340_clb_arctic_a0017.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/p340_clb_arctic_a0017.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/p340_clb_arctic_a0017.wav"></audio></td>
+    </tr>
+
+    <tr>
+        <td>p340</td>
+        <td><audio controls><source src="samples/source/p340_0011_000354.wav"></td>
+        <td><audio controls><source src="samples/spk/p340_0011_000354.wav"></td>
+        <td><audio controls><source src="samples/againvc/p340_0011_000354.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/p340_0011_000354.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/p340_0011_000354.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/p340_0011_000354.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/p340_0011_000354.wav"></audio></td>
+    </tr>
+
+
+    <tr>
+        <td>p363</td>
+        <td><audio controls><source src="samples/source/p363_rms_arctic_a0027.wav"></td>
+        <td><audio controls><source src="samples/spk/p363_rms_arctic_a0027.wav"></td>
+        <td><audio controls><source src="samples/againvc/p363_rms_arctic_a0027.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/p363_rms_arctic_a0027.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/p363_rms_arctic_a0027.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/p363_rms_arctic_a0027.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/p363_rms_arctic_a0027.wav"></audio></td>
+    </tr>
+
+    <tr>
+        <td>p363</td>
+        <td><audio controls><source src="samples/source/p363_rms_arctic_a0029.wav"></td>
+        <td><audio controls><source src="samples/spk/p363_rms_arctic_a0029.wav"></td>
+        <td><audio controls><source src="samples/againvc/p363_rms_arctic_a0029.wav"></td>
+        <td><audio controls><source src="samples/vqmivc/p363_rms_arctic_a0029.wav"></audio></td>
+        <td><audio controls><source src="samples/gse/p363_rms_arctic_a0029.wav"></audio></td>  
+        <td><audio controls><source src="samples/gse-finetune/p363_rms_arctic_a0029.wav"></audio></td>
+        <td><audio controls><source src="samples/proposed/p363_rms_arctic_a0029.wav"></audio></td>
+    </tr>
+
+
+</table>
+</blockquote>
+
+<h4>3. Ablation analysis: </h4>
+<blockquote>
+    <table border=1>
+    <tr>
+        <td rowspan="2" align="center"><span>Target Speaker</span></td>
+        <td rowspan="2" align="center"><span>Source Audio</span></td>
+        <td rowspan="2" align="center"><span>Target Speaker Audio</span></td>
+        <td colspan="5" align="center"><span>Synthesized Speech</span></td>
+    </tr>
+    <tr>
         <td align="center"><span>BL<span></td>
         <td align="center"><span>P1<span></td>
         <td align="center"><span>P2<span></td>
         <td align="center"><span>P3(proposed)<span></td>
         <!-- <td align="center"><span>P3(proposed)<span></td> -->
     </tr>
-
     <tr>
-        <td>1</td>
-        <td>male-news</td>
-        <td><audio controls><source src="samples/testset/male-news-clean-000004.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/male-news-clean-000004.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/male-news-clean-000004.wav"></audio></td>
-        <td><audio controls><source src="samples/P1/male-news-clean-000004.wav"></audio></td>
-        <td><audio controls><source src="samples/P2/male-news-clean-000004.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/male-news-clean-000004.wav"></audio></td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td>male-news</td>
-        <td><audio controls><source src="samples/testset/male-neu-clean-403504.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/male-neu-clean-403504.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/male-neu-clean-403504.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/male-neu-clean-403504.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/male-neu-clean-403504.wav"></audio></td>
-            <td><audio controls><source src="samples/P3/male-neu-clean-403504.wav"></audio></td>
-    </tr>
-    
-    <tr>
-        <td>3</td>
-        <td>male-novel</td>
-        <td><audio controls><source src="samples/testset/male-novel-clean-000005.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/male-novel-clean-000005.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/male-novel-clean-000005.wav"></audio></td>
-        <td><audio controls><source src="samples/P1/male-news-clean-000004.wav"></audio></td>
-        <td><audio controls><source src="samples/P2/male-news-clean-000004.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/male-novel-clean-000005.wav"></audio></td>
-    </tr>
-    
-
-
-    <tr>
-        <td>4</td>
-        <td>male-poetry</td>
-        <td><audio controls><source src="samples/testset/male-poetry-clean-000002.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/male-poetry-clean-000002.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/male-poetry-clean-000002.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/male-poetry-clean-000002.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/male-poetry-clean-000002.wav"></audio></td>
-            <td><audio controls><source src="samples/P3/male-poetry-clean-000002.wav"></audio></td>
-    </tr>
-
-
-
-
-    <tr>
-        <td>5</td>
-        <td>female-emotion-anger</td>
-        <td><audio controls><source src="samples/testset/female-anger-clean-220004.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/female-anger-clean-220004.wav"></audio></td>    
-        <td><audio controls><source src="samples/BL-energy/female-anger-clean-220004.wav"></audio></td>
-        <td><audio controls><source src="samples/P1/female-anger-clean-220004.wav"></audio></td>
-        <td><audio controls><source src="samples/P2/female-anger-clean-220004.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/female-anger-clean-220004.wav"></audio></td>
+        <td>slt</td>
+        <td><audio controls><source src="samples/source/slt_clb_arctic_a0025.wav"></td>
+        <td><audio controls><source src="samples/spk/slt_clb_arctic_a0025.wav"></td>
+        <td><audio controls><source src="samples/ppg2mel/slt_clb_arctic_a0025.wav"></td>
+        <td><audio controls><source src="samples/mel2mel/slt_clb_arctic_a0025.wav"></audio></td>
+        <td><audio controls><source src="samples/mel2mel-weight/slt_clb_arctic_a0025.wav"></audio></td>  
+        <td><audio controls><source src="samples/proposed/slt_clb_arctic_a0025.wav"></audio></td>
     </tr>
 
     <tr>
-        <td>6</td>
-        <td>female-emotion-anger</td>
-        <td><audio controls><source src="samples/testset/female-anger-clean-220001.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/female-anger-clean-220001.wav"></audio></td>    
-        <td><audio controls><source src="samples/BL-energy/female-anger-clean-220001.wav"></audio></td>
-        <td><audio controls><source src="samples/P1/female-anger-clean-220001.wav"></audio></td>
-        <td><audio controls><source src="samples/P2/female-anger-clean-220001.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/female-anger-clean-220001.wav"></audio></td>
+        <td>bdl</td>
+        <td><audio controls><source src="samples/source/bdl_clb_arctic_a0013.wav"></td>
+        <td><audio controls><source src="samples/spk/bdl_clb_arctic_a0013.wav"></td>
+        <td><audio controls><source src="samples/ppg2mel/bdl_clb_arctic_a0013.wav"></td>
+        <td><audio controls><source src="samples/mel2mel/bdl_clb_arctic_a0013.wav"></audio></td>
+        <td><audio controls><source src="samples/mel2mel-weight/bdl_clb_arctic_a0013.wav"></audio></td>  
+        <td><audio controls><source src="samples/proposed/bdl_clb_arctic_a0013.wav"></audio></td>
     </tr>
-
     <tr>
-        <td>7</td>
-        <td>female-emotion-disgust</td>
-        <td><audio controls><source src="samples/testset/female-disgust-clean-260004.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/female-disgust-clean-260004.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/female-disgust-clean-260004.wav"></audio></td>
-        <td><audio controls><source src="samples/P1/female-disgust-clean-260004.wav"></audio></td>
-        <td><audio controls><source src="samples/P2/female-disgust-clean-260004.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/female-disgust-clean-260004.wav"></audio></td>
+        <td>p340</td>
+        <td><audio controls><source src="samples/source/p340_rms_arctic_a0006.wav"></td>
+        <td><audio controls><source src="samples/spk/p340_rms_arctic_a0006.wav"></td>
+        <td><audio controls><source src="samples/ppg2mel/p340_rms_arctic_a0006.wav"></td>
+        <td><audio controls><source src="samples/mel2mel/p340_rms_arctic_a0006.wav"></audio></td>
+        <td><audio controls><source src="samples/mel2mel-weight/p340_rms_arctic_a0006.wav"></audio></td>  
+        <td><audio controls><source src="samples/proposed/p340_rms_arctic_a0006.wav"></audio></td>
     </tr>
+    <td>p363</td>
+    <td><audio controls><source src="samples/source/p363_rms_arctic_a0029.wav"></td>
+    <td><audio controls><source src="samples/spk/p363_rms_arctic_a0029.wav"></td>
+    <td><audio controls><source src="samples/ppg2mel/p363_rms_arctic_a0029.wav"></td>
+    <td><audio controls><source src="samples/mel2mel/p363_rms_arctic_a0029.wav"></audio></td>
+    <td><audio controls><source src="samples/mel2mel-weight/p363_rms_arctic_a0029.wav"></audio></td>  
+    <td><audio controls><source src="samples/proposed/p363_rms_arctic_a0029.wav"></audio></td>
 
-    <tr>
-        <td>8</td>
-        <td>female-emotion-disgust</td>
-        <td><audio controls><source src="samples/testset/female-disgust-clean-260001.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/female-disgust-clean-260001.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/female-disgust-clean-260001.wav"></audio></td>
-        <td><audio controls><source src="samples/P1/female-disgust-clean-260001.wav"></audio></td>
-        <td><audio controls><source src="samples/P2/female-disgust-clean-260001.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/female-disgust-clean-260001.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>9</td>
-        <td>female-emotion-happy</td>
-        <td><audio controls><source src="samples/testset/female-happy-clean-210002.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/female-happy-clean-210002.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/female-happy-clean-210002.wav"></audio></td>
-        <td><audio controls><source src="samples/P1/female-happy-clean-210002.wav"></audio></td>
-        <td><audio controls><source src="samples/P2/female-happy-clean-210002.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/female-happy-clean-210002.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>10</td>
-        <td>female-emotion-happy</td>
-        <td><audio controls><source src="samples/testset/female-happy-clean-210005.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/female-happy-clean-210005.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/female-happy-clean-210005.wav"></audio></td>
-        <td><audio controls><source src="samples/P1/female-happy-clean-210005.wav"></audio></td>
-        <td><audio controls><source src="samples/P2/female-happy-clean-210005.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/female-happy-clean-210005.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>11</td>
-        <td>female-emotion-sad</td>
-        <td><audio controls><source src="samples/testset/female-sad-clean-230004.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/female-sad-clean-230004.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/female-sad-clean-230004.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/female-sad-clean-230004.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/female-sad-clean-230004.wav"></audio></td>
-                <td><audio controls><source src="samples/P3/female-sad-clean-230004.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>12</td>
-        <td>female-emotion-sad</td>
-        <td><audio controls><source src="samples/testset/female-sad-clean-230002.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/female-sad-clean-230002.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/female-sad-clean-230002.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/female-sad-clean-230002.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/female-sad-clean-230002.wav"></audio></td>
-                <td><audio controls><source src="samples/P3/female-sad-clean-230002.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>13</td>
-        <td>female-emotion-surprise</td>
-        <td><audio controls><source src="samples/testset/female-surprise-clean-240003.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/female-surprise-clean-240003.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/female-surprise-clean-240003.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/female-surprise-clean-240003.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/female-surprise-clean-240003.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/female-surprise-clean-240003.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>14</td>
-        <td>female-emotion-surprise</td>
-        <td><audio controls><source src="samples/testset/female-surprise-clean-240005.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/female-surprise-clean-240005.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/female-surprise-clean-240005.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/female-surprise-clean-240005.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/female-surprise-clean-240005.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/female-surprise-clean-240005.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>15</td>
-        <td>sing</td>
-        <td><audio controls><source src="samples/testset/jmlongspk000003-jmlongsong000003-0.wav"></audio></td>
-        <td><audio controls><source src="samples/CS/jmlongspk000003-jmlongsong000003-0.wav"></audio></td>  
-        <td><audio controls><source src="samples/BL-energy/jmlongspk000003-jmlongsong000003-0.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/jmlongspk000003-jmlongsong000003-0.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/jmlongspk000003-jmlongsong000003-0.wav"></audio></td>
-            <td><audio controls><source src="samples/P3/jmlongspk000003-jmlongsong000003-0.wav"></audio></td>
-    </tr>
 </table>
 </blockquote>
 
-<h4>3. The results of source style transfer in dubbing testset: </h4>
-<blockquote>
-<table border=1>
-    <tr>
-        <td rowspan="2" align="center"><span>Test Set</span></td>
-        <td rowspan="2" align="center"><span>Testing scenarios</span></td>
-        <td rowspan="2" align="center"><span>Source Audio</span></td>
-        <td colspan="5" align="center"><span>Synthesized Speech</span></td>
-    </tr>
-
-    <tr>
-        <td align="center"><span>CS<span></td>
-        <td align="center"><span>BL<span></td>
-            <td align="center"><span>P1<span></td>
-                <td align="center"><span>P2<span></td>
-        <td align="center"><span>P3(proposed)<span></td>
-        <!-- <td align="center"><span>P3(proposed)<span></td> -->
-    </tr>
-
-    <tr>
-        <td>1</td>
-        <td>film and television dubbing</td>
-        <td><audio controls><source src="samples/testset/05-26岁-男.wav"></audio></td>
-            <td><audio controls><source src="samples/CS/05-26岁-男.wav"></audio></td>
-        <td><audio controls><source src="samples/BL-energy/05-26岁-男.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/05-26-male.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/05-26-male.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/05-26-male.wav"></audio></td>
-    </tr>
-
-    
-    <tr>
-        <td>2</td>
-        <td>film and television dubbing</td>
-        <td><audio controls><source src="samples/testset/19120501_06.wav"></audio></td>
-            <td><audio controls><source src="samples/CS/19120501_06.wav"></audio></td>
-        <td><audio controls><source src="samples/BL-energy/19120501_06.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/19120501_06.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/19120501_06.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/19120501_06.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>3</td>
-        <td>film and television dubbing</td>
-        <td><audio controls><source src="samples/testset/19120501_08.wav"></audio></td>
-            <td><audio controls><source src="samples/CS/19120501_08.wav"></audio></td>
-        <td><audio controls><source src="samples/BL-energy/19120501_08.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/19120501_08.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/19120501_08.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/19120501_08.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>4</td>
-        <td>film and television dubbing</td>
-        <td><audio controls><source src="samples/testset/qldy_m1_16_01.wav"></audio></td>
-            <td><audio controls><source src="samples/CS/qldy_m1_16_01.wav"></audio></td>
-        <td><audio controls><source src="samples/BL-energy/qldy_m1_16_01.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/qldy_m1_16_01.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/qldy_m1_16_01.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/qldy_m1_16_01.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>5</td>
-        <td>film and television dubbing</td>
-        <td><audio controls><source src="samples/testset/qldy_m1_4.wav"></audio></td>
-            <td><audio controls><source src="samples/CS/qldy_m1_4.wav"></audio></td>
-        <td><audio controls><source src="samples/BL-energy/qldy_m1_4.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/qldy_m1_4.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/qldy_m1_4.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/qldy_m1_4.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>6</td>
-        <td>film and television dubbing</td>
-        <td><audio controls><source src="samples/testset/ylzbj_17.wav"></audio></td>
-            <td><audio controls><source src="samples/CS/ylzbj_17.wav"></audio></td>
-        <td><audio controls><source src="samples/BL-energy/ylzbj_17.wav"></audio></td>
-            <td><audio controls><source src="samples/P1/ylzbj_17.wav"></audio></td>
-                <td><audio controls><source src="samples/P2/ylzbj_17.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/ylzbj_17.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>7</td>
-        <td>film and television dubbing</td>
-        <td><audio controls><source src="samples/testset/ylzbj_32.wav"></audio></td>
-            <td><audio controls><source src="samples/CS/ylzbj_32.wav"></audio></td>
-        <td><audio controls><source src="samples/BL-energy/ylzbj_32.wav"></audio></td>
-            
-        <td><audio controls><source src="samples/P1/ylzbj_32.wav"></audio></td>
-        <td><audio controls><source src="samples/P2/ylzbj_32.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/ylzbj_32.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>8</td>
-        <td>film and television dubbing</td>
-        <td><audio controls><source src="samples/testset/qldy_m1_7_03.wav"></audio></td>
-            <td><audio controls><source src="samples/CS/qldy_m1_7_03.wav"></audio></td>
-        <td><audio controls><source src="samples/BL-energy/qldy_m1_7_03.wav"></audio></td>
-            
-        <td><audio controls><source src="samples/P1/qldy_m1_7_03.wav"></audio></td>
-        <td><audio controls><source src="samples/P2/qldy_m1_7_03.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/qldy_m1_7_03.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>9</td>
-        <td>film and television dubbing</td>
-        <td><audio controls><source src="samples/testset/sister_16k_05.wav"></audio></td>
-            <td><audio controls><source src="samples/CS/第3集_妹妹_16k_05.wav"></audio></td>
-        <td><audio controls><source src="samples/BL-energy/第3集_妹妹_16k_05.wav"></audio></td>
-        <td><audio controls><source src="samples/P1/sister_16k_05.wav"></audio></td>
-        <td><audio controls><source src="samples/P2/sister_16k_05.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/sister_16k_05.wav"></audio></td>
-    </tr>
-
-    <tr>
-        <td>10</td>
-        <td>film and television dubbing</td>
-        <td><audio controls><source src="samples/testset/meiju_xmla_r1_bs_49.wav"></audio></td>
-            <td><audio controls><source src="samples/CS/meiju_xmla_r1_bs_49.wav"></audio></td>
-        <td><audio controls><source src="samples/BL-energy/meiju_xmla_r1_bs_49.wav"></audio></td>
-        <td><audio controls><source src="samples/P1/meiju_xmla_r1_bs_49.wav"></audio></td>
-        <td><audio controls><source src="samples/P2/meiju_xmla_r1_bs_49.wav"></audio></td>
-        <td><audio controls><source src="samples/P3/meiju_xmla_r1_bs_49.wav"></audio></td>
-    </tr>
-</table>
-</blockquote>
-
-<h4>4. The results of lf0 control: </h4>
+<h4>4. The results of using varying duration data: </h4>
 
 <blockquote>
 <table border=1>
 <tr>
     <td align="center"><span>Source Audio</span></td>
-    <td align="center"><span>0.5</span></td>
-    <td align="center"><span>1</span></td>
-    <td align="center"><span>1.5</span></td>
+    <td align="center"><span>Target Speaker Audio</span></td>
+    <td align="center"><span>1s</span></td>
+    <td align="center"><span>3s</span></td>
+    <td align="center"><span>6s</span></td>
+    <td align="center"><span>9s</span></td>
+    <td align="center"><span>15s</span></td>
 </tr>
 <tr>
-    <td><audio controls><source src="samples/testset/female-disgust-clean-260002.wav"></audio></td>
-    <td><audio controls><source src="samples/scale-lf0/05_female-disgust-clean-260002.wav"></audio></td>
-    <td><audio controls><source src="samples/scale-lf0/1_female-disgust-clean-260002.wav"></audio></td>
-    <td><audio controls><source src="samples/scale-lf0/1-5_female-disgust-clean-260002.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/source/clb_arctic_a0007.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/target-speaker/slt_arctic_a0013.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/1s/clb_arctic_a0007.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/3s/clb_arctic_a0007.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/6s/clb_arctic_a0007.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/9s/clb_arctic_a0007.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/15s/clb_arctic_a0007.wav"></audio></td>
 </tr>
+
+<tr>
+    <td><audio controls><source src="samples/duration/source/rms_arctic_a0002.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/target-speaker/slt_arctic_a0014.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/1s/rms_arctic_a0002.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/3s/rms_arctic_a0002.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/6s/rms_arctic_a0002.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/9s/rms_arctic_a0002.wav"></audio></td>
+    <td><audio controls><source src="samples/duration/15s/rms_arctic_a0002.wav"></audio></td>
+</tr>
+
 </table>
-</blockquote>
-<h4>5. The results of energy control: </h4>
-
-<blockquote>
-<table border=1>
-<tr>
-    <td align="center"><span>Source Audio</span></td>
-    <td align="center"><span>0.5</span></td>
-    <td align="center"><span>1</span></td>
-    <td align="center"><span>1.5</span></td>
-
-</tr>
-<tr>
-    <td><audio controls><source src="samples/testset/female-disgust-clean-260002.wav"></audio></td>
-    <td><audio controls><source src="samples/scale-energy/0-5_female-disgust-clean-260002.wav"></audio></td>
-    <td><audio controls><source src="samples/scale-energy/1_female-disgust-clean-260002.wav"></audio></td>
-    <td><audio controls><source src="samples/scale-energy/1-5_female-disgust-clean-260002.wav"></audio></td>
-</tr>
-</table>
-
-
-<br/>
 </blockquote>
