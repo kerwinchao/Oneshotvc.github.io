@@ -6,9 +6,9 @@
 </head>
 <body>
 
-<h2 align="center">ICASSP 2022 oneshot</h2>
+<h2 align="center">One-shot voice conversion for style transfer based on speaker adaptation</h2>
 <!-- <div><b>Authors:</b> Zhichao Wang</div> -->
-<div><b>Abstract:</b>  This paper proposes an expressive one-shot speaker adaptation framework that performs expressive conversion across arbitrary speakers with only one target-speaker utterance. With training on one utterance, the conversion model is easy to over-fit to training data and causes low speaker similarity and conversion expressiveness.  In this paper, we manage to solve this problem by three proposed methods. First, speaker normalization module is introduced to normalize speaker-related information such as timber and style in bottleneck features extracted by ASR. Furthermore, we adopt weight regularization in the adaptation process to encourage adapted model similar to base model to preserve knowledge and prevent over-fitting in training data. Finally, to comprehensively decouple the speech factors(content, speaker, style) and achieve expressive voice conversion, prosody module is designed in our framework to extract prosody representation. Experiments show that our approach is superior to state-of-the-art one-shot VC systems in terms of style and speaker similarity; meanwhile, the speech naturalness also achieves good results.
+<div><b>Abstract:</b>One-shot style transfer is a challenging task, since training on one utterance makes model extremely easy to over-fit to training data and causes low speaker similarity and lack of expressiveness. In this paper, we build on the recognition-synthesis framework and propose a one-shot voice conversion approach for style transfer based on speaker adaptation. First, a speaker normalization module is adopted to remove speaker-related information in bottleneck features extracted by ASR. Second, we adopt weight regularization in the adaptation process to prevent over-fitting caused by using only one utterance from target speaker as training data. Finally, to comprehensively decouple the speech factors, i.e., content, speaker, style, and transfer source style to the target, a prosody module is used to extract prosody representation. Experiments show that our approach is superior to the state-of-the-art one-shot VC systems in terms of style and speaker similarity; additionally, our approach also maintains good speech quality.
 </div>
 
 <hr>
@@ -177,20 +177,9 @@
         <td><audio controls><source src="sample/vqmivc/bdl_0011_000701.wav"></audio></td>
         <td><audio controls><source src="sample/gse/bdl_0011_000701.wav"></audio></td>  
         <td><audio controls><source src="sample/gse-finetune/bdl_0011_000701.wav"></audio></td>
-        <td><audio controls><source src="sample/proposed/bdl_clb_arctic_a0004.wav"></audio></td>
+        <td><audio controls><source src="sample/proposed/bdl_0011_000701"></audio></td>
     </tr>
 
-
-    <tr>
-        <td>bdl</td>
-        <td><audio controls><source src="sample/source/bdl_0011_000701.wav"></td>
-        <td><audio controls><source src="sample/spk/bdl_0011_000701.wav"></td>
-        <td><audio controls><source src="sample/againvc/bdl_0011_000701.wav"></td>
-        <td><audio controls><source src="sample/vqmivc/bdl_0011_000701.wav"></audio></td>
-        <td><audio controls><source src="sample/gse/bdl_0011_000701.wav"></audio></td>  
-        <td><audio controls><source src="sample/gse-finetune/bdl_0011_000701.wav"></audio></td>
-        <td><audio controls><source src="sample/proposed/bdl_clb_arctic_a0004.wav"></audio></td>
-    </tr>
 
 
     <tr>
